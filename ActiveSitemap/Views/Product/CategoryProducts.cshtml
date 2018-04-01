@@ -1,0 +1,25 @@
+﻿@model IList<Product>
+
+@{
+	ViewBag.Title = "Category Products";
+}
+
+<h1>@ViewBag.Title</h1>
+
+<div>
+	<a href="@AppMap.ProductListRoute.BuildUrl()">Back to categories</a>
+</div>
+
+<p>@ViewBag.Message</p>
+
+<ul>
+	@foreach (var oneProd in Model) {
+		<li>View details for <a href="@AppMap.ProductDetailsRoute.BuildUrl(oneProd)">@oneProd.ProductName</a></li>
+	}
+</ul>
+
+@section Scripts {
+	<script>
+		var currentMenu = 'products';
+	</script>
+}
