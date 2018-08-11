@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ActiveSitemap.CustomInfrastructure;
 using ActiveSitemap.Routes.ProductRoutes;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ namespace ActiveSitemap.Routes {
 		private static bool _isConfigured;
 		private static string _scheme = "";
 		private static string _host = "";
+		private static IList<ILogicalRouteTemplateProvider> _routes;
 
 		#region Configuration Methods
 
@@ -24,7 +26,29 @@ namespace ActiveSitemap.Routes {
 			//we actually just need the scheme (http vs https) and host (www.example.com vs localhost:port)
 			//but they do not yet exist at application startup and the IHttpContextAccessor does
 			_httpContextAccessor = httpContextAccessor;
+			ConfigureHierarchy();
+		}
 
+		private static void ConfigureHierarchy() {
+
+			var siteRoot = (SiteHomeRoute)
+				.AddChild(BuildProductHierarchy())
+				.AddChild(AboutUsRoute)
+				.AddChild(ContactUsRoute);
+
+			_routes = new List<ILogicalRouteTemplateProvider> {
+				siteRoot
+			};
+		}
+
+		private static ILogicalRouteTemplateProvider BuildProductHierarchy() {
+
+			var productRoot = ProductListRoute;
+
+			productRoot.AddChild(ProductsInCategoryRoute);
+			productRoot.AddChild(ProductDetailsRoute);
+
+			return productRoot;
 		}
 
 		#endregion
